@@ -1,0 +1,37 @@
+{
+    "serverPort": {
+        "key":          "port",
+        "shortKey":     "p",
+        "action":       "get",
+        "number":       1,
+        "defaultValue": 80
+    },
+
+    "publicDirectory": {
+        "key":          "publicDir",
+        "shortKey":     "d",
+        "action":       "get",
+        "number":       1,
+        "defaultValue": "public"
+    },
+
+    "disabledThumbnail": {
+        "action":   "set",
+        "value":    true
+    },
+
+    "gallery": "gallery",
+
+    "thumbnailSize":{
+        "action":      "get",
+        "number":       1,
+        "defaultValue": "400x400"
+    },
+
+    "allowExtension":{
+        "jpg":  true,
+        "jpeg": true,
+        "png":  true,
+        "gif":  true
+    }
+}
