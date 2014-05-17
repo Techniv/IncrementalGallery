@@ -52,6 +52,33 @@ function processGallery(){
     if(!fs.existsSync(dataPath)) fs.mkdirSync(dataPath);
     if(!fs.statSync(dataPath).isDirectory()) throw new Error("The data path in the gallery is not a directory.");
 
+    // Cleanup
+    console.log("Cleanning old files:");
+    var oldFiles;
+    if(config.disableThumnail) {
+        oldFiles = fs.readdirSync(thumbsPath);
+        for(var i in oldFiles){
+            stdout.write("\t"+oldFiles[i]);
+            try{
+                fs.unlink(path.join(thumbsPath, oldFiles[i]));
+                stdout.write(" OK!".green);
+            } catch (e){
+                stdout.write(" KO!".red);
+            }
+        }
+
+        oldFiles = fs.readdirSync(dataPath);
+        for(var i in oldFiles){
+            stdout.write("\t"+oldFiles[i]);
+            try{
+                fs.unlinkSync(path.join(dataPath, oldFiles[i]));
+                stdout.write(" OK!".green);
+            } catch (e){
+                stdout.write(" KO!".red);
+            }
+        }
+    }
+
     if(typeof config.thumbnailSize == "string"){
         if(!sizeReg.test(config.thumbnailSize)) throw new Error("Invalid thumbnailSize parameter. It must be like 400x400");
         config.thumbnailSize = {
@@ -69,12 +96,18 @@ function processGallery(){
 }
 
 function processFile(filename){
-    if(extReg.test(filename) && config.allowExtension[RegExp.$1]){
-        var extention = RegExp.$1;
-        stdout.write("    Process "+filename+": ");
-        createDataUrl(filename, extention);
-        if(!config.disabledThumbnail) createThumb(filename);
-        stdout.write("OK!\n".green);
+    stdout.write("    Process "+filename+": ");
+    try{
+        if(extReg.test(filename) && config.allowExtension[RegExp.$1]){
+            var extention = RegExp.$1;
+            createDataUrl(filename, extention);
+            if(!config.disableThumbnail) createThumb(filename);
+            stdout.write("OK!\n".green);
+        } else {
+            stdout.write("Pass!\n".yellow);
+        }
+    } catch(e) {
+        stdout.write("KO!\n".red);
     }
 }
 

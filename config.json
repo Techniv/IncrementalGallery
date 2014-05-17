@@ -15,7 +15,7 @@
         "defaultValue": "public"
     },
 
-    "disabledThumbnail": {
+    "disableThumbnail": {
         "action":   "set",
         "value":    true
     },
