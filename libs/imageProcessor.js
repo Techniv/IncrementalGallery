@@ -55,27 +55,27 @@ function processGallery(){
     // Cleanup
     console.log("Cleanning old files:");
     var oldFiles;
-    if(config.disableThumnail) {
+    if(!config.disableThumnail) {
         oldFiles = fs.readdirSync(thumbsPath);
-        for(var i in oldFiles){
-            stdout.write("\t"+oldFiles[i]);
-            try{
+        for (var i in oldFiles) {
+            stdout.write("\t" + oldFiles[i]);
+            try {
                 fs.unlink(path.join(thumbsPath, oldFiles[i]));
-                stdout.write(" OK!".green);
-            } catch (e){
-                stdout.write(" KO!".red);
+                stdout.write(" OK!\n".green);
+            } catch (e) {
+                stdout.write(" KO!\n".red);
             }
         }
+    }
 
-        oldFiles = fs.readdirSync(dataPath);
-        for(var i in oldFiles){
-            stdout.write("\t"+oldFiles[i]);
-            try{
-                fs.unlinkSync(path.join(dataPath, oldFiles[i]));
-                stdout.write(" OK!".green);
-            } catch (e){
-                stdout.write(" KO!".red);
-            }
+    oldFiles = fs.readdirSync(dataPath);
+    for(var i in oldFiles){
+        stdout.write("\t"+oldFiles[i]);
+        try{
+            fs.unlinkSync(path.join(dataPath, oldFiles[i]));
+            stdout.write(" OK!\n".green);
+        } catch (e){
+            stdout.write(" KO!\n".red);
         }
     }
 
@@ -87,6 +87,7 @@ function processGallery(){
         }
     }
 
+    console.log("\nProcessing gallery content.");
     var files = fs.readdirSync(galleryPath);
     for( var i in files ){
         processFile(files[i]);
@@ -96,7 +97,8 @@ function processGallery(){
 }
 
 function processFile(filename){
-    stdout.write("    Process "+filename+": ");
+    if(fs.statSync(path.join(galleryPath, filename)).isDirectory()) return;
+    stdout.write("\tProcess "+filename+": ");
     try{
         if(extReg.test(filename) && config.allowExtension[RegExp.$1]){
             var extention = RegExp.$1;
@@ -116,4 +118,4 @@ module.exports = {
         filename = path.resolve(dataPath, filename+".txt");
         fs.readFile(filename, callback);
     }
-}
+};
