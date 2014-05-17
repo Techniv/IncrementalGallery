@@ -77,3 +77,10 @@ function processFile(filename){
         stdout.write("OK!\n".green);
     }
 }
+
+module.exports = {
+    getDataUrl: function getDataUrl(filename, callback){
+        filename = path.resolve(dataPath, filename+".txt");
+        fs.readFile(filename, callback);
+    }
+}
