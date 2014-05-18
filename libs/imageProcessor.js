@@ -116,6 +116,9 @@ function processFile(filename){
 module.exports = {
     getDataUrl: function getDataUrl(filename, callback){
         filename = path.resolve(dataPath, filename+".txt");
-        fs.readFile(filename, callback);
+        fs.readFile(filename, function(err, data){
+            if(err) callback(err, undefined);
+            else callback(undefined, data.toString());
+        });
     }
 };

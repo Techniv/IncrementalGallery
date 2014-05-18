@@ -8,47 +8,65 @@ var io      = require("socket.io");
 var path    = require("path");
 var img     = require("./imageProcessor");
 var config  = require("cmd-conf").getParameters();
+var stdout  = process.stdout;
 
 var app     = express();
 var server  = http.createServer(app);
-var socket  = io.listen(server);
+var socket  = io.listen(server, {log: false});
+
+console.log("\nStarting servers:");
 
 // HTTP
+stdout.write("\tHTTP server:            \t");
 app.use(express.static(path.join(__dirname, "..", config.publicDirectory)));
+stdout.write("OK!\n".green);
 
 // Web socket
+stdout.write("\tWeb Socket server:      \t");
 socket.on("connection", function(client){
-    client.set("stack", []);
-    client.set("processing", false);
+    client.stack = [];
+    client.processing = false;
 
     // Get request
     client.on("get", function(data){
-        for(var i = 0; i > data.length; i++){
-            client.get("stack").push(data[i]);
+        for(var i = 0; i < data.length; i++){
+            client.stack.push(data[i]);
         }
-        if(!client.get("processing"))
+        if(!client.processing)
             process.nextTick(processStack.bind(client));
     });
     client.emit('connected');
 });
+stdout.write("OK!\n".green);
 
-server.listen(config.serverPort);
+stdout.write("\tServers listen on port "+config.serverPort+":\t");
+try{
+    server.listen(config.serverPort);
+    stdout.write("OK!\n".green);
+} catch (e) {
+    stdout.write("KO!\n".red)
+}
 
 
 function processStack(){
     var client = this;
-    var stack = client.get("stack");
+    var stack = client.stack;
 
     if(stack.length == 0){
-        client.set("processing", false);
+        client.processing = false;
         return;
     }
 
-    client.set("processing", true);
+    client.processing = true;
 
     var query = stack.shift();
 
     img.getDataUrl(query, function(err, data){
+        if(err){
+            console.log(("Error on "+query).red, err);
+            return;
+        }
+        console.log("\tSend:".green, query, data.substr(0,25));
         var answer = {
             name: query,
             data: data

@@ -5,6 +5,17 @@
     <title></title>
 </head>
 <body>
+    <div id="gallery"></div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/incgallery.js"></script>
+    <script>
+        ;(function(){
+            var imageList = [
+                "bubble.jpg", 'cube.png', 'mixer.jpeg', 'ms-bsod.jpg'
+            ];
 
+            IncGallery("#gallery", imageList);
+        })();
+    </script>
 </body>
 </html>
